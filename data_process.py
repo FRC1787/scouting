@@ -195,6 +195,7 @@ with open(input_file_name, "r", newline="") as input_csv_file:
                 teleProcessor = get_highest_number(row_data[17]),
                 teleNet = get_highest_number(row_data[18]),
                 climb = row_data[20],
+
                 auto = row_data[24],
                 speed = row_data[25],
                 pickupSpeed = row_data[26],
@@ -310,6 +311,25 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 for i, match in enumerate(single_teams_data.match_data):
                     # qualative = [single_teams_data.auto, single_teams_data.speed, single_teams_data.pickupSpeed, single_teams_data.scoring, 
                     # single_teams_data.driverDecisiveness, single_teams_data.balance, single_teams_data.wouldYouPick]
+                    quantative_values = {
+                        "Bad": 0,
+                        "Ok": 0.5,
+                        "Good": 1
+                    }
+
+                    auto = quantative_values.get(match.auto)
+                    speed = quantative_values.get(match.speed)
+                    pickupSpeed = quantative_values.get(match.pickupSpeed)
+                    scoring = quantative_values.get(match.scoring)
+                    driverDecisiveness = quantative_values.get(match.driverDecisiveness)
+                    balance = quantative_values.get(match.balance)
+                    wouldYouPick = quantative_values.get(match.wouldYouPick)
+                    print(auto)
+                    print(speed)
+                    print(pickupSpeed)
+                    single_teams_data.quantativeAve = single_teams_data.quantativeAve + (
+                        auto + speed + pickupSpeed +
+                        scoring + driverDecisiveness + balance + wouldYouPick) / 7
 
                     if match.robotBroke == "No":
                         single_teams_worksheet.write(single_teams_data.commentNum, 4, "❌")
@@ -381,7 +401,7 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
 
                     global timesIterated
                     timesIterated = i + 1
-                
+                single_teams_data.quantativeAve = single_teams_data.quantativeAve/timesIterated
                 single_teams_data.aveAlgaeRemoved = single_teams_data.aveAlgaeRemoved/timesIterated
                 single_teams_data.aveLeavePoints = single_teams_data.aveLeavePoints/timesIterated
                 single_teams_data.aveAutoL4Points = single_teams_data.aveAutoL4Points/timesIterated
@@ -400,6 +420,8 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 single_teams_data.aveAutoPoints = single_teams_data.aveAutoPoints/timesIterated
                 single_teams_data.aveTelePoints = single_teams_data.aveTelePoints/timesIterated
                 single_teams_data.avePoints = single_teams_data.avePoints/timesIterated
+
+                single_teams_worksheet.write(4, 2, single_teams_data.quantativeAve)
 
 
                 allClimbs = (single_teams_data.deepClimb + single_teams_data.shallowClimb +
@@ -432,14 +454,20 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 single_teams_worksheet.insert_chart(f"{FIRST_CHART_COL}{CHART_START_ROW + CHART_ROW_SPACING}", barge_pie_chart)
 
                 # Write the match numbers and points to the worksheet
-                for i, aPoints in enumerate(auto_points):
+
+                max_matches = 75
+                limit_matches = matches[:max_matches]
+                limit_auto_points = auto_points[:max_matches]
+                limit_tele_points = tele_points[:max_matches]
+                
+                for i, aPoints in enumerate(limit_auto_points):
                     print(f"Writing {aPoints} to row {DATA_START_ROW + 1 + i}")
                     single_teams_worksheet.write(DATA_START_ROW + 2 + i, 1, aPoints)
 
-                for i, match_num in enumerate(matches):
+                for i, match_num in enumerate(limit_matches):
                     single_teams_worksheet.write(DATA_START_ROW + 2 + i, 0, match_num)
                 
-                for i, tPoints in enumerate(tele_points):
+                for i, tPoints in enumerate(limit_tele_points):
                     print(f"Writing {tPoints} to row {DATA_START_ROW + 1 + i}")
                     single_teams_worksheet.write(DATA_START_ROW + 2 + i, 2, tPoints)
 
@@ -473,7 +501,7 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 t_points_line_chart.add_series({
                     'name': 'Points',
                     'categories': f'={team_num}!$A${DATA_START_ROW + 2}:$A${DATA_START_ROW + 1 + num_matches}',
-                    'values': f'={team_num}!$B${DATA_START_ROW + 2}:$B${DATA_START_ROW + 1 + num_matches}',
+                    'values': f'={team_num}!$C${DATA_START_ROW + 2}:$C${DATA_START_ROW + 1 + num_matches}',
                     'line': {'color': 'blue'}
                 })
 
