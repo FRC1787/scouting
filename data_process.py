@@ -13,9 +13,21 @@ output_worksheets = []
 total_points_rankings = []
 tele_score_rankings = []
 auto_score_rankings = []
+coral_score_rankings = []
+algae_score_rankings = []
+rice_score_rankings = []
 total_points_rankings_team_names = []
 tele_score_rankings_team_names = []
 auto_score_rankings_team_names = []
+coral_score_rankings_team_names = []
+algae_score_rankings_team_names = []
+rice_score_rankings_team_names = []
+total_points_rankings_SCA = []
+tele_score_rankings_SCA = []
+auto_score_rankings_SCA = []
+coral_score_rankings_SCA = []
+algae_score_rankings_SCA = []
+rice_score_rankings_SCA = []
 
 DATA_START_ROW = 37
 AVERAGES_ROW = 33
@@ -99,9 +111,11 @@ class TeamData:
     aveTeleL3Points: float = 0
     aveTeleL2Points: float = 0
     aveTeleL1Points: float = 0
+    aveCoralPoints: float = 0
     aveTeleProcessorPoints: float = 0
     aveTeleNetPoints: float = 0
     aveBargePoints: float = 0
+    aveAlgaePoints: float = 0
     avePoints: float = 0
     weight: float = 0
     drivetrain: str = ""
@@ -117,6 +131,13 @@ class TeamData:
     deepClimb: int = 0
     commentNum: int = 1
     quantativeAve: float = 1
+    drivetrain: str = ""
+    aveSpeed: float = 0
+    aveDriver: float = 0
+    swerve: str = ""
+    coral: str = ""
+    algae: str = ""
+    riceScore: float = 0
 
 
 def parse_team_number(num):
@@ -150,6 +171,8 @@ def parse_match_number(num):
 def get_highest_number(numbers):
     # Used because answers can be "1,2,3,4" for scoring or just a single intiger
     # Split the string by commas and convert each part to an integer
+    if (numbers == ""):
+        return 0
     if isinstance(numbers, str):
         numbers = [int(num.strip()) for num in numbers.split(',')]
         # Return the highest number
@@ -281,13 +304,21 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 # first number is height and second is left and right
                 single_teams_worksheet.write(0, 2, "Ranks")
                 single_teams_worksheet.write(1, 0, "Total Points")
-                single_teams_worksheet.write(2, 0, "Auto Points")
-                single_teams_worksheet.write(3, 0, "Tele Points")
-                single_teams_worksheet.write(4, 0, "Qualitative")
+                single_teams_worksheet.write(2, 0, "Tele Points")
+                single_teams_worksheet.write(3, 0, "Auto Points")
+                single_teams_worksheet.write(4, 0, "Coral Points")
+                single_teams_worksheet.write(5, 0, "Algae Points")
+                single_teams_worksheet.write(6, 0, "Rice Score")
+                single_teams_worksheet.write(7, 0, "--------------------------------------------------------------------------------------------------")
+                single_teams_worksheet.write(8, 0, "Qualitative")
                 single_teams_worksheet.write(0, 4, "Broke?")
                 single_teams_worksheet.write(0, 5, "Match #")
                 single_teams_worksheet.write(0, 6, "Scouter")
                 single_teams_worksheet.write(0, 7, "Comment")
+                single_teams_worksheet.write(38, 0, "Match")
+                single_teams_worksheet.write(38, 1, "Auto")
+                single_teams_worksheet.write(38, 2, "Tele")
+                single_teams_worksheet.write(38, 3, "Person")
                 with open("input2.csv.", "r", newline="") as input_csv_file:
                     input_handling_object = csv.reader(input_csv_file)
                     for row_num, row_data in enumerate(input_handling_object):
@@ -298,7 +329,13 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                             # row_num = row_num + 1
                             1==1
                         else:
-                            # single_teams_worksheet.write(4, 2, row_data[3])
+                            single_teams_worksheet.write(9, 0, row_data[5])
+                            single_teams_data.drivetrain = row_data[5]
+                            if row_data[5] == "Swerve":
+                                single_teams_data.swerve = "✅"
+                            else:
+                                single_teams_data.swerve = "❌"
+
                             # single_teams_worksheet.write(5, 2, row_data[5])
                             # single_teams_worksheet.write(6, 2, row_data[7])
                             # single_teams_worksheet.write(7, 2, row_data[17])
@@ -324,6 +361,7 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                     driverDecisiveness = quantative_values.get(match.driverDecisiveness)
                     balance = quantative_values.get(match.balance)
                     wouldYouPick = quantative_values.get(match.wouldYouPick)
+
                     print(auto)
                     print(speed)
                     print(pickupSpeed)
@@ -338,11 +376,14 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                     single_teams_worksheet.write(single_teams_data.commentNum, 5, match.qual_match_num)
                     single_teams_worksheet.write(single_teams_data.commentNum, 6, match.commenter)
                     single_teams_worksheet.write(single_teams_data.commentNum, 7, match.comment)
+                    single_teams_worksheet.write(single_teams_data.commentNum + 38, 3, match.commenter)
                     single_teams_data.commentNum =  single_teams_data.commentNum + 1
                         # for ever match the team played add the point now and avereges the by times itterated after
                     if match.leave == True:
                         print(match.leave)
                         single_teams_data.aveLeavePoints = single_teams_data.aveLeavePoints + leavePointsValue
+                    single_teams_data.aveSpeed = speed
+                    single_teams_data.aveDriver = driverDecisiveness
                     single_teams_data.aveAutoL4Points = single_teams_data.aveAutoL4Points + (match.autoL4 * autoL4PointsValue)
                     single_teams_data.aveAutoL3Points = single_teams_data.aveAutoL3Points + (match.autoL3 * autoL3PointsValue)
                     single_teams_data.aveAutoL2Points = single_teams_data.aveAutoL2Points + (match.autoL2 * autoL2PointsValue)
@@ -420,8 +461,27 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 single_teams_data.aveAutoPoints = single_teams_data.aveAutoPoints/timesIterated
                 single_teams_data.aveTelePoints = single_teams_data.aveTelePoints/timesIterated
                 single_teams_data.avePoints = single_teams_data.avePoints/timesIterated
+                
+                single_teams_data.aveCoralPoints = single_teams_data.aveAutoL4Points + single_teams_data.aveAutoL3Points + single_teams_data.aveAutoL2Points + single_teams_data.aveAutoL1Points
+                single_teams_data.aveTeleL4Points + single_teams_data.aveTeleL3Points + single_teams_data.aveTeleL2Points + single_teams_data.aveTeleL1Points
+                
+                single_teams_data.aveAlgaePoints = single_teams_data.aveAutoProcessorPoints + single_teams_data.aveAutoNetPoints + single_teams_data.aveTeleProcessorPoints 
+                + single_teams_data.aveTeleNetPoints
 
-                single_teams_worksheet.write(4, 2, single_teams_data.quantativeAve)
+                single_teams_data.riceScore = (single_teams_data.avePoints*0.2)+(single_teams_data.aveAutoPoints*0.2)+(single_teams_data.aveBargePoints*0.2)+(single_teams_data.aveSpeed*0.2)
+                +(single_teams_data.aveDriver*0.2)
+
+                single_teams_worksheet.write(8, 2, single_teams_data.quantativeAve)
+
+                if (single_teams_data.aveCoralPoints > 5):
+                    single_teams_data.coral = "✅"
+                else:
+                    single_teams_data.coral = "❌"
+                
+                if (single_teams_data.aveAlgaePoints > 3):
+                    single_teams_data.algae = "✅"
+                else:
+                    single_teams_data.algae = "❌"
 
 
                 allClimbs = (single_teams_data.deepClimb + single_teams_data.shallowClimb +
@@ -516,39 +576,103 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
             if total_points_rankings[rank] < team.avePoints:
                 total_points_rankings.insert(rank, team.avePoints)
                 total_points_rankings_team_names.insert(rank, team.team_num)
+                total_points_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
                 inserted = "yes"
         if inserted == "no":
             total_points_rankings.append(team.avePoints)
             total_points_rankings_team_names.append(team.team_num)
+            total_points_rankings_SCA.append(team.swerve+team.coral+team.algae)
 
         inserted = "no"
         for rank in range(len(auto_score_rankings)):
             if auto_score_rankings[rank] < team.aveAutoPoints:
                 auto_score_rankings.insert(rank, team.aveAutoPoints)
                 auto_score_rankings_team_names.insert(rank, team.team_num)
+                auto_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
                 inserted = "yes"
         if inserted == "no":
             auto_score_rankings.append(team.aveAutoPoints)
             auto_score_rankings_team_names.append(team.team_num)
-        print(team.team_num)
-        print(team.aveTelePoints)
+            auto_score_rankings_SCA.append(team.swerve+team.coral+team.algae)
+
         inserted = "no"
         for rank in range(len(tele_score_rankings)):
             if tele_score_rankings[rank] < team.aveTelePoints:
                 tele_score_rankings.insert(rank, team.aveTelePoints)
                 tele_score_rankings_team_names.insert(rank, team.team_num)
+                tele_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
                 inserted = "yes"
         if inserted == "no":
             tele_score_rankings.append(team.aveTelePoints)
             tele_score_rankings_team_names.append(team.team_num)
-    ranking_worksheet.write(0, 2, "Total Points")
-    ranking_worksheet.write(0, 4, "Auto Points")
-    ranking_worksheet.write(0, 6, "Tele Points")
+            tele_score_rankings_SCA.append(team.swerve+team.coral+team.algae)
+
+        inserted = "no"
+        for rank in range(len(coral_score_rankings)):
+            if coral_score_rankings[rank] < team.aveCoralPoints:
+                coral_score_rankings.insert(rank, team.aveCoralPoints)
+                coral_score_rankings_team_names.insert(rank, team.team_num)
+                coral_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
+                inserted = "yes"
+        if inserted == "no":
+            coral_score_rankings.append(team.aveCoralPoints)
+            coral_score_rankings_team_names.append(team.team_num)
+            coral_score_rankings_SCA.append(team.swerve+team.coral+team.algae)
+
+        inserted = "no"
+        for rank in range(len(algae_score_rankings)):
+            if algae_score_rankings[rank] < team.aveAlgaePoints:
+                algae_score_rankings.insert(rank, team.aveAlgaePoints)
+                algae_score_rankings_team_names.insert(rank, team.team_num)
+                algae_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
+                inserted = "yes"
+        if inserted == "no":
+            algae_score_rankings.append(team.aveAlgaePoints)
+            algae_score_rankings_team_names.append(team.team_num)
+            algae_score_rankings_SCA.append(team.swerve+team.coral+team.algae)
+
+        inserted = "no"
+        for rank in range(len(rice_score_rankings)):
+            if rice_score_rankings[rank] < team.riceScore:
+                rice_score_rankings.insert(rank, team.riceScore)
+                rice_score_rankings_team_names.insert(rank, team.team_num)
+                rice_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
+                inserted = "yes"
+        if inserted == "no":
+            rice_score_rankings.append(team.riceScore)
+            rice_score_rankings_team_names.append(team.team_num)
+            rice_score_rankings_SCA.append(team.swerve+team.coral+team.algae)
+
+    ranking_worksheet.write(0, 0, "S,C,A =")
+    ranking_worksheet.write(1, 0, "Swerve")
+    ranking_worksheet.write(2, 0, "Coral")
+    ranking_worksheet.write(3, 0, "Algae")
+    ranking_worksheet.write(0, 2, "Total")
+    ranking_worksheet.write(0, 3, "S,C,A")
+    ranking_worksheet.write(0, 4, "Auto")
+    ranking_worksheet.write(0, 5, "S,C,A")
+    ranking_worksheet.write(0, 6, "Tele")
+    ranking_worksheet.write(0, 7, "S,C,A")
+    ranking_worksheet.write(0, 8, "Coral")
+    ranking_worksheet.write(0, 9, "S,C,A")
+    ranking_worksheet.write(0, 10, "Algae")
+    ranking_worksheet.write(0, 11, "S,C,A")
+    ranking_worksheet.write(0, 12, "Rice Score")
+    ranking_worksheet.write(0, 13, "S,C,A")
     if len(all_team_data) < 10:
         for i in range(len(all_team_data)):
             ranking_worksheet.write(i + 1, 2, total_points_rankings_team_names[i])
+            ranking_worksheet.write(i + 1, 3, total_points_rankings_SCA[i])
             ranking_worksheet.write(i + 1, 4, auto_score_rankings_team_names[i])
+            ranking_worksheet.write(i + 1, 5, auto_score_rankings_SCA[i])
             ranking_worksheet.write(i + 1, 6, tele_score_rankings_team_names[i])
+            ranking_worksheet.write(i + 1, 7, tele_score_rankings_SCA[i])
+            ranking_worksheet.write(i + 1, 8, coral_score_rankings_team_names[i])
+            ranking_worksheet.write(i + 1, 9, coral_score_rankings_SCA[i])
+            ranking_worksheet.write(i + 1, 10, algae_score_rankings_team_names[i])
+            ranking_worksheet.write(i + 1, 11, algae_score_rankings_SCA[i])
+            ranking_worksheet.write(i + 1, 12, rice_score_rankings_team_names[i])
+            ranking_worksheet.write(i + 1, 13, rice_score_rankings_SCA[i])
     for i, worksheet in enumerate(output_worksheets):
         if not i == 0:
             for e in range(len(total_points_rankings_team_names)):
@@ -560,6 +684,16 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
             for e in range(len(team_num_list)):
                 if team_num_list[i-1] == tele_score_rankings_team_names[e]:
                     worksheet.write(3, 2, e+1)
+            for e in range(len(coral_score_rankings_team_names)):
+                if team_num_list[i-1] == coral_score_rankings_team_names[e]:
+                    worksheet.write(4, 2, e+1)
+            for e in range(len(team_num_list)):
+                if team_num_list[i-1] == algae_score_rankings_team_names[e]:
+                    worksheet.write(5, 2, e+1)
+            for e in range(len(team_num_list)):
+                if team_num_list[i-1] == rice_score_rankings_team_names[e]:
+                    worksheet.write(6, 2, e+1)
+            
             # for e, team in enumerate(team_num_list):
             #     if team == total_points_rankings_team_names[e]:
             #         worksheet.write(1, 3, total_points_rankings[e])
