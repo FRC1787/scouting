@@ -525,7 +525,10 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                     single_teams_worksheet.write(DATA_START_ROW + 2 + i, 1, aPoints)
 
                 for i, match_num in enumerate(limit_matches):
-                    single_teams_worksheet.write(DATA_START_ROW + 2 + i, 0, match_num)
+                    if (match_num < 2):
+                        1==1
+                    else:
+                        single_teams_worksheet.write(DATA_START_ROW + 2 + i, 0, match_num)
                 
                 for i, tPoints in enumerate(limit_tele_points):
                     print(f"Writing {tPoints} to row {DATA_START_ROW + 1 + i}")
@@ -537,7 +540,7 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 a_points_line_chart.set_x_axis({'name': 'Match Number'})
                 a_points_line_chart.set_y_axis({'name': 'Auto Points'})
                 
-                num_matches = matches[len(matches) - 1]
+                num_matches = matches[len(matches) -1]
 
                 a_points_line_chart.add_series({
                     'name': 'Points',
@@ -567,6 +570,8 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
 
                 line_chart_row = CHART_START_ROW + CHART_ROW_SPACING  # Adjust the row number as needed
                 single_teams_worksheet.insert_chart(f"{"Q"}{line_chart_row }", t_points_line_chart)
+
+
     # does all the rankings
     for i, team in enumerate(all_team_data):
         inserted = "no"
@@ -574,10 +579,12 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
         # print(team.aveTelePoints)
         for rank in range(len(total_points_rankings)):
             if total_points_rankings[rank] < team.avePoints:
-                total_points_rankings.insert(rank, team.avePoints)
-                total_points_rankings_team_names.insert(rank, team.team_num)
-                total_points_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
-                inserted = "yes"
+                if inserted == "no":
+                    total_points_rankings.insert(rank, team.avePoints)
+                    total_points_rankings_team_names.insert(rank, team.team_num)
+                    total_points_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
+                    inserted = "yes"
+                # print(total_points_rankings[rank])
         if inserted == "no":
             total_points_rankings.append(team.avePoints)
             total_points_rankings_team_names.append(team.team_num)
@@ -586,10 +593,11 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
         inserted = "no"
         for rank in range(len(auto_score_rankings)):
             if auto_score_rankings[rank] < team.aveAutoPoints:
-                auto_score_rankings.insert(rank, team.aveAutoPoints)
-                auto_score_rankings_team_names.insert(rank, team.team_num)
-                auto_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
-                inserted = "yes"
+                if inserted == "no":
+                    auto_score_rankings.insert(rank, team.aveAutoPoints)
+                    auto_score_rankings_team_names.insert(rank, team.team_num)
+                    auto_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
+                    inserted = "yes"
         if inserted == "no":
             auto_score_rankings.append(team.aveAutoPoints)
             auto_score_rankings_team_names.append(team.team_num)
@@ -598,10 +606,11 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
         inserted = "no"
         for rank in range(len(tele_score_rankings)):
             if tele_score_rankings[rank] < team.aveTelePoints:
-                tele_score_rankings.insert(rank, team.aveTelePoints)
-                tele_score_rankings_team_names.insert(rank, team.team_num)
-                tele_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
-                inserted = "yes"
+                if inserted == "no":
+                    tele_score_rankings.insert(rank, team.aveTelePoints)
+                    tele_score_rankings_team_names.insert(rank, team.team_num)
+                    tele_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
+                    inserted = "yes"
         if inserted == "no":
             tele_score_rankings.append(team.aveTelePoints)
             tele_score_rankings_team_names.append(team.team_num)
@@ -610,10 +619,11 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
         inserted = "no"
         for rank in range(len(coral_score_rankings)):
             if coral_score_rankings[rank] < team.aveCoralPoints:
-                coral_score_rankings.insert(rank, team.aveCoralPoints)
-                coral_score_rankings_team_names.insert(rank, team.team_num)
-                coral_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
-                inserted = "yes"
+                if inserted == "no":
+                    coral_score_rankings.insert(rank, team.aveCoralPoints)
+                    coral_score_rankings_team_names.insert(rank, team.team_num)
+                    coral_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
+                    inserted = "yes"
         if inserted == "no":
             coral_score_rankings.append(team.aveCoralPoints)
             coral_score_rankings_team_names.append(team.team_num)
@@ -622,10 +632,11 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
         inserted = "no"
         for rank in range(len(algae_score_rankings)):
             if algae_score_rankings[rank] < team.aveAlgaePoints:
-                algae_score_rankings.insert(rank, team.aveAlgaePoints)
-                algae_score_rankings_team_names.insert(rank, team.team_num)
-                algae_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
-                inserted = "yes"
+                if inserted == "no":
+                    algae_score_rankings.insert(rank, team.aveAlgaePoints)
+                    algae_score_rankings_team_names.insert(rank, team.team_num)
+                    algae_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
+                    inserted = "yes"
         if inserted == "no":
             algae_score_rankings.append(team.aveAlgaePoints)
             algae_score_rankings_team_names.append(team.team_num)
@@ -634,10 +645,11 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
         inserted = "no"
         for rank in range(len(rice_score_rankings)):
             if rice_score_rankings[rank] < team.riceScore:
-                rice_score_rankings.insert(rank, team.riceScore)
-                rice_score_rankings_team_names.insert(rank, team.team_num)
-                rice_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
-                inserted = "yes"
+                if inserted == "no":
+                    rice_score_rankings.insert(rank, team.riceScore)
+                    rice_score_rankings_team_names.insert(rank, team.team_num)
+                    rice_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
+                    inserted = "yes"
         if inserted == "no":
             rice_score_rankings.append(team.riceScore)
             rice_score_rankings_team_names.append(team.team_num)
@@ -659,7 +671,7 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
     ranking_worksheet.write(0, 11, "S,C,A")
     ranking_worksheet.write(0, 12, "Rice Score")
     ranking_worksheet.write(0, 13, "S,C,A")
-    if len(all_team_data) < 10:
+    if len(all_team_data) < 75:
         for i in range(len(all_team_data)):
             ranking_worksheet.write(i + 1, 2, total_points_rankings_team_names[i])
             ranking_worksheet.write(i + 1, 3, total_points_rankings_SCA[i])
@@ -707,4 +719,3 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 # single_teams_worksheet.write(0, 5, "Match #")
                 # single_teams_worksheet.write(0, 6, "Scouter")
                 # single_teams_worksheet.write(0, 7, "Comment")
-print(len(auto_points))
