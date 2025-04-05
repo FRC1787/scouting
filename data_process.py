@@ -28,6 +28,7 @@ auto_score_rankings_SCA = []
 coral_score_rankings_SCA = []
 algae_score_rankings_SCA = []
 rice_score_rankings_SCA = []
+rice_scores = []
 
 DATA_START_ROW = 37
 AVERAGES_ROW = 33
@@ -50,7 +51,7 @@ L1PointsValue = 2
 L2PointsValue = 3
 L3PointsValue = 4
 L4PointsValue = 5
-processorPointsValue = 6
+processorPointsValue = 2
 netPointsValue = 4
 
 chart_colors = {
@@ -137,6 +138,7 @@ class TeamData:
     swerve: str = ""
     coral: str = ""
     algae: str = ""
+    climb: str  = "" 
     riceScore: float = 0
 
 
@@ -319,7 +321,7 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 single_teams_worksheet.write(38, 1, "Auto")
                 single_teams_worksheet.write(38, 2, "Tele")
                 single_teams_worksheet.write(38, 3, "Person")
-                with open("input2.csv.", "r", newline="") as input_csv_file:
+                with open("input2.csv.", "r", newline="", encoding="utf8") as input_csv_file:
                     input_handling_object = csv.reader(input_csv_file)
                     for row_num, row_data in enumerate(input_handling_object):
                         # row_num = 0
@@ -468,20 +470,24 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 single_teams_data.aveAlgaePoints = single_teams_data.aveAutoProcessorPoints + single_teams_data.aveAutoNetPoints + single_teams_data.aveTeleProcessorPoints 
                 + single_teams_data.aveTeleNetPoints
 
-                single_teams_data.riceScore = (single_teams_data.avePoints*0.2)+(single_teams_data.aveAutoPoints*0.2)+(single_teams_data.aveBargePoints*0.2)+(single_teams_data.aveSpeed*0.2)
-                +(single_teams_data.aveDriver*0.2)
+                single_teams_data.riceScore = (single_teams_data.aveAutoPoints*0.333)+(single_teams_data.aveBargePoints*0.333)+(((single_teams_data.aveSpeed)
+                +(single_teams_data.aveDriver) * 5) / 0.333)
 
                 single_teams_worksheet.write(8, 2, single_teams_data.quantativeAve)
 
-                if (single_teams_data.aveCoralPoints > 5):
+                if (single_teams_data.aveCoralPoints > 10):
                     single_teams_data.coral = "✅"
                 else:
                     single_teams_data.coral = "❌"
                 
-                if (single_teams_data.aveAlgaePoints > 3):
+                if (single_teams_data.aveAlgaePoints > 2):
                     single_teams_data.algae = "✅"
                 else:
                     single_teams_data.algae = "❌"
+                if (single_teams_data.aveBargePoints > 5):
+                    single_teams_data.climb = "✅"
+                else:
+                    single_teams_data.climb = "❌"
 
 
                 allClimbs = (single_teams_data.deepClimb + single_teams_data.shallowClimb +
@@ -648,12 +654,14 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 if inserted == "no":
                     rice_score_rankings.insert(rank, team.riceScore)
                     rice_score_rankings_team_names.insert(rank, team.team_num)
-                    rice_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae)
+                    rice_score_rankings_SCA.insert(rank, team.swerve+team.coral+team.algae+team.climb)
+                    rice_scores.insert(rank, team.riceScore)
                     inserted = "yes"
         if inserted == "no":
             rice_score_rankings.append(team.riceScore)
             rice_score_rankings_team_names.append(team.team_num)
-            rice_score_rankings_SCA.append(team.swerve+team.coral+team.algae)
+            rice_score_rankings_SCA.append(team.swerve+team.coral+team.algae+team.climb)
+            rice_scores.append(team.riceScore)
 
     ranking_worksheet.write(0, 0, "S,C,A =")
     ranking_worksheet.write(1, 0, "Swerve")
@@ -670,7 +678,8 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
     ranking_worksheet.write(0, 10, "Algae")
     ranking_worksheet.write(0, 11, "S,C,A")
     ranking_worksheet.write(0, 12, "Rice Score")
-    ranking_worksheet.write(0, 13, "S,C,A")
+    ranking_worksheet.write(0, 13, "S,C,A, CLIMB")
+    ranking_worksheet.write(0, 14, "Rice Score")
     if len(all_team_data) < 75:
         for i in range(len(all_team_data)):
             ranking_worksheet.write(i + 1, 2, total_points_rankings_team_names[i])
@@ -685,6 +694,7 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
             ranking_worksheet.write(i + 1, 11, algae_score_rankings_SCA[i])
             ranking_worksheet.write(i + 1, 12, rice_score_rankings_team_names[i])
             ranking_worksheet.write(i + 1, 13, rice_score_rankings_SCA[i])
+            ranking_worksheet.write(i + 1, 15, rice_scores[i])
     for i, worksheet in enumerate(output_worksheets):
         if not i == 0:
             for e in range(len(total_points_rankings_team_names)):
