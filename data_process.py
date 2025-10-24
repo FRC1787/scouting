@@ -1,6 +1,7 @@
 import csv
 import os
 import xlsxwriter
+import tba_match_sorting
 from dataclasses import dataclass, field
 
 input_file_name = "input.csv"
@@ -93,7 +94,6 @@ class SingleTeamSingleMatchEntry:
     driverDecisiveness: str = ""
     balance: str = ""
     wouldYouPick: str = ""
-
 
 @dataclass
 class TeamData:
