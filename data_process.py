@@ -200,7 +200,7 @@ with open(input_file_name, "r", newline="") as input_csv_file:
         if row_num > -1:
             # Put all of the information from a single row in excel into a python object
             # called "team_match_entry" to make it easier to deal with later on
-            print(f"Processing Row Number {row_num + 1}")
+            # print(f"Processing Row Number {row_num + 1}")
             team_match_entry = SingleTeamSingleMatchEntry(
                 commenter = row_data[2],
                 team_num = parse_team_number(row_data[3]),
@@ -364,9 +364,9 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                     balance = quantative_values.get(match.balance)
                     wouldYouPick = quantative_values.get(match.wouldYouPick)
 
-                    print(auto)
-                    print(speed)
-                    print(pickupSpeed)
+                    # print(auto)
+                    # print(speed)
+                    # print(pickupSpeed)
                     single_teams_data.quantativeAve = single_teams_data.quantativeAve + (
                         auto + speed + pickupSpeed +
                         scoring + driverDecisiveness + balance + wouldYouPick) / 7
@@ -382,7 +382,7 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                     single_teams_data.commentNum =  single_teams_data.commentNum + 1
                         # for ever match the team played add the point now and avereges the by times itterated after
                     if match.leave == True:
-                        print(match.leave)
+                        # print(match.leave)
                         single_teams_data.aveLeavePoints = single_teams_data.aveLeavePoints + leavePointsValue
                     single_teams_data.aveSpeed = speed
                     single_teams_data.aveDriver = driverDecisiveness
@@ -527,7 +527,7 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 limit_tele_points = tele_points[:max_matches]
                 
                 for i, aPoints in enumerate(limit_auto_points):
-                    print(f"Writing {aPoints} to row {DATA_START_ROW + 1 + i}")
+                    # print(f"Writing {aPoints} to row {DATA_START_ROW + 1 + i}")
                     single_teams_worksheet.write(DATA_START_ROW + 2 + i, 1, aPoints)
 
                 for i, match_num in enumerate(limit_matches):
@@ -537,7 +537,7 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                         single_teams_worksheet.write(DATA_START_ROW + 2 + i, 0, match_num)
                 
                 for i, tPoints in enumerate(limit_tele_points):
-                    print(f"Writing {tPoints} to row {DATA_START_ROW + 1 + i}")
+                    # print(f"Writing {tPoints} to row {DATA_START_ROW + 1 + i}")
                     single_teams_worksheet.write(DATA_START_ROW + 2 + i, 2, tPoints)
 
                 # Create the line chart
@@ -729,3 +729,6 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 # single_teams_worksheet.write(0, 5, "Match #")
                 # single_teams_worksheet.write(0, 6, "Scouter")
                 # single_teams_worksheet.write(0, 7, "Comment")
+# tbaSorting = tba_match_sorting
+tba_match_sorting.initializeTBAData()
+tba_match_sorting.makeBothAllianceMatchClass(all_team_match_entries[1])
