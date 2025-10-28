@@ -2,7 +2,8 @@ import csv
 import os
 import xlsxwriter
 import tba_match_sorting
-from dataclasses import dataclass, field
+from typing import List
+import shared_classes
 
 input_file_name = "input.csv"
 output_file_name = "output_data.xlsx"
@@ -64,83 +65,6 @@ chart_colors = {
     "BLACK": "#252323",
 }
 
-@dataclass
-class SingleTeamSingleMatchEntry:
-    team_num: int = 0
-    qual_match_num: int = 0
-    leave: bool = 0
-    autoL4: int = 0
-    autoL3: int = 0
-    autoL2: int = 0
-    autoL1: int = 0
-    autoProcessor: int = 0
-    autoNet: int = 0
-    teleL4: int = 0
-    teleL3: int = 0
-    teleL2: int = 0
-    teleL1: int = 0
-    teleProcessor: int = 0
-    teleNet: int = 0
-    climb: str = ""
-    commenter: str = ""
-    comment: str = ""
-    totalPoints: int  = 0
-    algaeRemoved: int = 0
-    robotBroke: str = ""
-    auto: str = ""
-    speed: str = ""
-    pickupSpeed: str = ""
-    scoring: str = ""
-    driverDecisiveness: str = ""
-    balance: str = ""
-    wouldYouPick: str = ""
-
-@dataclass
-class TeamData:
-    team_num: int = 0
-    match_data: list = field(default_factory=list)
-    aveAutoPoints: float = 0
-    aveLeavePoints: float = 0
-    aveAutoL4Points: float = 0
-    aveAutoL3Points: float = 0
-    aveAutoL2Points: float = 0
-    aveAutoL1Points: float = 0
-    aveAutoProcessorPoints: float = 0
-    aveAutoNetPoints: float = 0
-    aveTelePoints: float = 0
-    aveTeleL4Points: float = 0
-    aveTeleL3Points: float = 0
-    aveTeleL2Points: float = 0
-    aveTeleL1Points: float = 0
-    aveCoralPoints: float = 0
-    aveTeleProcessorPoints: float = 0
-    aveTeleNetPoints: float = 0
-    aveBargePoints: float = 0
-    aveAlgaePoints: float = 0
-    avePoints: float = 0
-    weight: float = 0
-    drivetrain: str = ""
-    whatGamePeiceCanIntake: str = ""
-    howDoesScoreCoral: str = ""
-    howDoesScoreAlgae: str = ""
-    canClimbFrom: str = ""
-    syle: str = ""
-    aveAlgaeRemoved: float = 0
-    noClimb: int = 0
-    park: int = 0
-    shallowClimb: int = 0
-    deepClimb: int = 0
-    commentNum: int = 1
-    quantativeAve: float = 1
-    drivetrain: str = ""
-    aveSpeed: float = 0
-    aveDriver: float = 0
-    swerve: str = ""
-    coral: str = ""
-    algae: str = ""
-    climb: str  = "" 
-    riceScore: float = 0
-
 
 def parse_team_number(num):
     # The team number could come in as a poorly formatted string or a number, this function
@@ -201,7 +125,7 @@ with open(input_file_name, "r", newline="") as input_csv_file:
             # Put all of the information from a single row in excel into a python object
             # called "team_match_entry" to make it easier to deal with later on
             # print(f"Processing Row Number {row_num + 1}")
-            team_match_entry = SingleTeamSingleMatchEntry(
+            team_match_entry = shared_classes.SingleTeamSingleMatchEntry(
                 commenter = row_data[2],
                 team_num = parse_team_number(row_data[3]),
                 qual_match_num=parse_match_number(row_data[4]),
@@ -251,7 +175,7 @@ for match_entry in all_team_match_entries:
     if match_entry.team_num not in team_num_list:
         team_num_list.append(match_entry.team_num)
 
-        new_single_team_data = TeamData()
+        new_single_team_data = shared_classes.TeamData()
         new_single_team_data.team_num = match_entry.team_num
         # print(new_single_team_data.team_num)
 
@@ -731,4 +655,5 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 # single_teams_worksheet.write(0, 7, "Comment")
 # tbaSorting = tba_match_sorting
 tba_match_sorting.initializeTBAData()
-tba_match_sorting.makeBothAllianceMatchClass(all_team_match_entries[1])
+teamInAMatch = [all_team_match_entries[0],all_team_match_entries[1],all_team_match_entries[2],all_team_match_entries[3],all_team_match_entries[4],all_team_match_entries[5]]
+tba_match_sorting.makeBothAllianceMatchClass(teamInAMatch)

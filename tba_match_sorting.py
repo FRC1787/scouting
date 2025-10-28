@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 import os
 import json
-import data_process
+import shared_classes
+from typing import List
 
 tbaFileName = 'TBAMatches.json'
 
@@ -39,21 +40,37 @@ class singleAllianceMatch:
     secondBotEndgame: str = "None"
     thirdBotEndgame: str = "None"
 
-def makeBothAllianceMatchClass(SingleTeamSingleMatchEntrysList):
+def makeBothAllianceMatchClass(SingleTeamSingleMatchEntrysList: List[shared_classes.SingleTeamSingleMatchEntry]):
     redTeamNumbs = []
     blueTeamNumbs = []
-    redAllianceInOrder = []
-    blueAllianceInOrder = []
-    print(SingleTeamSingleMatchEntrysList.team_num)
-    matchData = tbaQualsMatches[SingleTeamSingleMatchEntrysList.qual_match_num - 1]
+    redAllianceInOrder = [0,0,0]
+    blueAllianceInOrder = [0,0,0]
+    # print(SingleTeamSingleMatchEntrysList.team_num)
+    matchData = tbaQualsMatches[SingleTeamSingleMatchEntrysList[0].qual_match_num - 1]
     for teamString in matchData["alliances"]["blue"]["team_keys"]:
         teamNumWithoutString = int(teamString.replace("frc", ""))
         blueTeamNumbs.append(teamNumWithoutString)
         print(teamNumWithoutString)
-    for teamString in matchData["alliances"]["red"]["team_keys"]:
+    for i, teamString in enumerate(matchData)["alliances"]["red"]["team_keys"]:
         teamNumWithoutString = int(teamString.replace("frc", ""))
-        redTeamNumbs.append(teamNumWithoutString)
+        redTeamNumbs.insert(i,teamNumWithoutString)
         print(teamNumWithoutString)
+    for teamMatchData in SingleTeamSingleMatchEntrysList:
+        teamNum = teamMatchData.team_num
+        for i in range(6):
+            if i <= 3:
+                if teamNum == redTeamNumbs[i]:
+                    # print(i)
+                    redAllianceInOrder[i] = teamNum
+                    print(str(teamNum) + " " + str(i))
+            else:
+                if teamNum == blueTeamNumbs[i-3]:
+                    redAllianceInOrder[i-3] = teamNum
+                    print(str(teamNum) + "   " + str(i))
+                print("smth is happening")
+
+    
+    
         
 def initializeTBAData():
     try:
