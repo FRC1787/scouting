@@ -89,39 +89,82 @@ def makeBothAllianceMatchClass(SingleTeamSingleMatchEntrysList: List[shared_clas
     # auto
     for i in range (2):
         allianceList = []
-        team = ""
+        alliance = ""
         autoOffPercent = 0.0
+        teleOffPercent = 0.0
+        endGameOffPercent = 0.0
         if i == 0:
             allianceList = redAllianceInOrderData
-            team = "red"
+            alliance = "red"
         else:
             allianceList = blueAllianceInOrderData
-            team = "blue"
+            alliance = "blue"
         leavesOff = 0.0
         for i in range(3):
-            teamAutoLineStr = matchData["score_breakdown"][team]["autoLineRobot"+str(i+1)]
+            teamAutoLineStr = matchData["score_breakdown"][alliance]["autoLineRobot"+str(i+1)]
             teamAutoLineBool = teamAutoLineStr == "Yes"
             if allianceList[i].leave != teamAutoLineBool:
-                print(allianceList[i].commenter)
-                print(allianceList[i].leave)
-                print("real" + str(teamAutoLineBool))
+                # print(allianceList[i].commenter)
+                # print(allianceList[i].leave)
+                # print("real" + str(teamAutoLineBool))
                 leavesOff += 1.0
-        autoOffPercent += 0.3 * (leavesOff / 3.0) # max if can be is 0.3 or 30%
+        autoOffPercent += 0.4 * (leavesOff / 3.0) # max if can be is 0.3 or 30%
         # print(autoOffPercent)
-        scoutedCoralL2Total = allianceList[0].autoL2 + allianceList[1].autoL2 + allianceList[2].autoL2
-        scoutedCoralL3Total = allianceList[0].autoL3 + allianceList[1].autoL3 + allianceList[2].autoL3
-        scoutedCoralL4Total = allianceList[0].autoL4 + allianceList[1].autoL4 + allianceList[2].autoL4
+        scoutedCoralL2TotalAuto = allianceList[0].autoL2 + allianceList[1].autoL2 + allianceList[2].autoL2
+        scoutedCoralL3TotalAuto = allianceList[0].autoL3 + allianceList[1].autoL3 + allianceList[2].autoL3
+        scoutedCoralL4TotalAuto = allianceList[0].autoL4 + allianceList[1].autoL4 + allianceList[2].autoL4
 
-        tbaL2Auto =  matchData["score_breakdown"][team]["autoReef"]["tba_botRowCount"]
-        tbaL3Auto =  matchData["score_breakdown"][team]["autoReef"]["tba_midRowCount"]
-        tbaL4Auto =  matchData["score_breakdown"][team]["autoReef"]["tba_topRowCount"]
+        tbaL2Auto =  matchData["score_breakdown"][alliance]["autoReef"]["tba_botRowCount"]
+        tbaL3Auto =  matchData["score_breakdown"][alliance]["autoReef"]["tba_midRowCount"]
+        tbaL4Auto =  matchData["score_breakdown"][alliance]["autoReef"]["tba_topRowCount"]
         
-        autoOffPercent += abs(scoutedCoralL2Total - tbaL2Auto) / tbaL2Auto
-        autoOffPercent += abs(scoutedCoralL3Total - tbaL3Auto) / tbaL3Auto
-        autoOffPercent += abs(scoutedCoralL4Total - tbaL4Auto) / tbaL4Auto
-        print(autoOffPercent)
+        autoOffPercent += abs(scoutedCoralL2TotalAuto - tbaL2Auto) * 0.3
+        autoOffPercent += abs(scoutedCoralL3TotalAuto - tbaL3Auto) * 0.3
+        autoOffPercent += abs(scoutedCoralL4TotalAuto - tbaL4Auto) * 0.3
+        # print(str(scoutedCoralL4Total) + " real "+ str(tbaL4Auto) + " "+ alliance + " "+ str(allianceList[0].qual_match_num) + 
+        #       " " + str(matchData["match_number"]))
 
-            
+        # Teleop calculation
+        scoutedCoralL1Total = allianceList[0].autoL1 + allianceList[0].teleL1 
+        + allianceList[1].autoL1 + allianceList[1].teleL1 + allianceList[2].autoL1 +allianceList[2].teleL1
+        scoutedCoralL2TotalTele = allianceList[0].teleL2 + allianceList[1].teleL2 + allianceList[2].teleL2
+        scoutedCoralL3TotalTele = allianceList[0].teleL3 + allianceList[1].teleL3 + allianceList[2].teleL3
+        scoutedCoralL4TotalTele = allianceList[0].teleL4 + allianceList[1].teleL4 + allianceList[2].teleL4
+
+        scoutedNetAlgae = allianceList[0].autoNet + allianceList[0].teleNet 
+        + allianceList[1].autoNet + allianceList[1].teleNet + allianceList[2].autoNet +allianceList[2].teleNet
+        scoutedProcessorAlgae = allianceList[0].autoProcessor + allianceList[0].teleProcessor 
+        + allianceList[1].autoProcessor + allianceList[1].teleProcessor + allianceList[2].autoProcessor +allianceList[2].teleProcessor
+
+        scoutedNetAlgae = scoutedNetAlgae - scoutedProcessorAlgae
+
+        tbaL1 =  matchData["score_breakdown"][alliance]["teleopReef"]["trough"]
+        tbaL2Tele =  matchData["score_breakdown"][alliance]["teleopReef"]["tba_botRowCount"]
+        tbaL3Tele =  matchData["score_breakdown"][alliance]["teleopReef"]["tba_midRowCount"]
+        tbaL4Tele =  matchData["score_breakdown"][alliance]["teleopReef"]["tba_topRowCount"]
+
+        tbaNetAlgae =  matchData["score_breakdown"][alliance]["netAlgaeCount"]
+        tbaProccesorAlgae =  matchData["score_breakdown"][alliance]["wallAlgaeCount"]
+        
+        teleOffPercent += abs(scoutedCoralL1Total - tbaL1) * 0.05
+        teleOffPercent += abs(scoutedCoralL2TotalTele - tbaL2Tele) * 0.05
+        teleOffPercent += abs(scoutedCoralL3TotalTele - tbaL3Tele) * 0.05
+        teleOffPercent += abs(scoutedCoralL4TotalTele - tbaL4Tele) * 0.05
+        teleOffPercent += abs(scoutedProcessorAlgae - tbaProccesorAlgae) * 0.05
+        # make it so the more processor then we trust the total net count less bc they just count how many are in the net
+        howMuchWeTrustNetCount = 0.1
+        if tbaProccesorAlgae > 0:
+            if tbaProccesorAlgae == 1:
+                howMuchWeTrustNetCount = 0.05
+            else:
+                howMuchWeTrustNetCount = 0.1 *(1/tbaProccesorAlgae)
+        if(tbaNetAlgae <= 0 and tbaProccesorAlgae > 0):
+            howMuchWeTrustNetCount = 0
+            # print("kidna sketchy")
+        # teleOffPercent += abs(scoutedNetAlgae - tbaNetAlgae) * howMuchWeTrustNetCount
+        # print(abs(scoutedNetAlgae - tbaNetAlgae) * howMuchWeTrustNetCount)
+        print(teleOffPercent)
+
         
 def initializeTBAData():
     try:
@@ -135,7 +178,8 @@ def initializeTBAData():
 
     for i, match in enumerate(tbaMatchesWithPlayoffs):
         if match["comp_level"] == "qm":
-            tbaQualsMatches.insert(match["match_number"], match)
+            tbaQualsMatches.insert(match["match_number"] - 1, match)
+            # print(match["match_number"])
         # print(match["comp_level"])
 
 #print(tbaQualsMatches[11]["match_number"])

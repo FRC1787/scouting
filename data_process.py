@@ -445,7 +445,7 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
 
                 # Write the match numbers and points to the worksheet
 
-                max_matches = 75
+                max_matches = 94
                 limit_matches = matches[:max_matches]
                 limit_auto_points = auto_points[:max_matches]
                 limit_tele_points = tele_points[:max_matches]
@@ -655,5 +655,14 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 # single_teams_worksheet.write(0, 7, "Comment")
 # tbaSorting = tba_match_sorting
 tba_match_sorting.initializeTBAData()
-teamInAMatch = [all_team_match_entries[0],all_team_match_entries[1],all_team_match_entries[2],all_team_match_entries[3],all_team_match_entries[4],all_team_match_entries[5]]
-tba_match_sorting.makeBothAllianceMatchClass(teamInAMatch)
+for matchNum in range(max_matches):
+    # teamsInAMatch = [all_team_match_entries[0],all_team_match_entries[1],all_team_match_entries[2],all_team_match_entries[3],all_team_match_entries[4],all_team_match_entries[5]]
+    teamsInAMatch = []
+    for match_entry in all_team_match_entries:
+        # print(match_entry.qual_match_num)
+        # print(matchNum)
+        if match_entry.qual_match_num == matchNum+1:
+            # print(str(match_entry.qual_match_num)+ " and " + str(matchNum+1))
+            teamsInAMatch.append(match_entry)
+    # print(len(teamsInAMatch))
+    tba_match_sorting.makeBothAllianceMatchClass(teamsInAMatch)
