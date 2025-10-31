@@ -30,6 +30,7 @@ class SingleTeamSingleMatchEntry:
     driverDecisiveness: str = ""
     balance: str = ""
     wouldYouPick: str = ""
+
 @dataclass
 class TeamData:
     team_num: int = 0
@@ -75,3 +76,32 @@ class TeamData:
     algae: str = ""
     climb: str  = "" 
     riceScore: float = 0
+
+@dataclass
+class scoutingAccuracyMatch:
+    overallInaccuracyRed: float = 0.0 
+    autoInaccuracyRed: float = 0.0
+    teleInaccuracyRed: float = 0.0
+    endGameInaccuracyRed: float = 0.0
+    allainceColorRed: str = ""
+    matchNumRed: int = 0
+    scouterOneNameRed: str = ""
+    scouterTwoNameRed: str = ""
+    scouterThreeNameRed: str = ""
+    scouterOneInacuracyRed: float = 0.0
+    scouterTwoInacuracyRed: float = 0.0
+    scouterTwoInacuracyRed: float = 0.0
+
+    overallInaccuracyBlue: float = 0.0 
+    autoInaccuracyBlue: float = 0.0
+    teleInaccuracyBlue: float = 0.0
+    endGameInaccuracyBlue: float = 0.0
+    allainceColorBlue: str = ""
+    matchNumBlue: int = 0
+    scouterOneNameBlue: str = ""
+    scouterTwoNameBlue: str = ""
+    scouterThreeNameBlue: str = ""
+    scouterOneInacuracyBlue: float = 0.0
+    scouterTwoInacuracyBlue: float = 0.0
+    scouterTwoInacuracyBlue: float = 0.0
+    

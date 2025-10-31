@@ -2,14 +2,14 @@ import csv
 import os
 import xlsxwriter
 import tba_match_sorting
-from typing import List
 import shared_classes
 
 input_file_name = "input.csv"
 output_file_name = "output_data.xlsx"
 
+allMatchesValidationData = [shared_classes.scoutingAccuracyMatch]
 all_team_match_entries = []
-all_team_data = []
+all_team_data: dict[int, shared_classes.TeamData] = {}
 team_num_list = []
 output_worksheets = []
 total_points_rankings = []
@@ -179,9 +179,9 @@ for match_entry in all_team_match_entries:
         new_single_team_data.team_num = match_entry.team_num
         # print(new_single_team_data.team_num)
 
-        all_team_data.append(new_single_team_data)
+        all_team_data[new_single_team_data.team_num] = new_single_team_data
 
-    for single_teams_data in all_team_data:
+    for single_teams_data in all_team_data.values():
         if single_teams_data.team_num == match_entry.team_num:
 
             duplicate_entry = False
@@ -203,7 +203,9 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
 
     # Create the ranking worksheet first
     ranking_worksheet = output_workbook.add_worksheet("Rankings")
+    accuracy_worksheet = output_workbook.add_worksheet("Accuracy")
     output_worksheets.append(ranking_worksheet)
+    # output_worksheets.append(accuracy_worksheet)
 
     # Create a new sheet for every team
     for team_num in team_num_list:
@@ -216,7 +218,7 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
 
         # Find the all_team_data entry for the team with the same number as the team_num
         # variable
-        for single_teams_data in all_team_data:
+        for single_teams_data in all_team_data.values():
             if single_teams_data.team_num == team_num:
 
                 points.clear
@@ -503,7 +505,7 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
 
 
     # does all the rankings
-    for i, team in enumerate(all_team_data):
+    for i, team in enumerate(all_team_data.values()):
         inserted = "no"
         # print(team.team_num)
         # print(team.aveTelePoints)
@@ -604,8 +606,8 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
     ranking_worksheet.write(0, 12, "Rice Score")
     ranking_worksheet.write(0, 13, "S,C,A, CLIMB")
     ranking_worksheet.write(0, 14, "Rice Score")
-    if len(all_team_data) < 75:
-        for i in range(len(all_team_data)):
+    if len(all_team_data.values()) < 75:
+        for i in range(len(all_team_data.values())):
             ranking_worksheet.write(i + 1, 2, total_points_rankings_team_names[i])
             ranking_worksheet.write(i + 1, 3, total_points_rankings_SCA[i])
             ranking_worksheet.write(i + 1, 4, auto_score_rankings_team_names[i])
@@ -653,16 +655,37 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 # single_teams_worksheet.write(0, 5, "Match #")
                 # single_teams_worksheet.write(0, 6, "Scouter")
                 # single_teams_worksheet.write(0, 7, "Comment")
-# tbaSorting = tba_match_sorting
-tba_match_sorting.initializeTBAData()
-for matchNum in range(max_matches):
-    # teamsInAMatch = [all_team_match_entries[0],all_team_match_entries[1],all_team_match_entries[2],all_team_match_entries[3],all_team_match_entries[4],all_team_match_entries[5]]
-    teamsInAMatch = []
-    for match_entry in all_team_match_entries:
-        # print(match_entry.qual_match_num)
-        # print(matchNum)
-        if match_entry.qual_match_num == matchNum+1:
-            # print(str(match_entry.qual_match_num)+ " and " + str(matchNum+1))
-            teamsInAMatch.append(match_entry)
-    # print(len(teamsInAMatch))
-    tba_match_sorting.makeBothAllianceMatchClass(teamsInAMatch)
+    # tbaSorting = tba_match_sorting
+    accuracy_worksheet.write(0, 1, "Match")
+    accuracy_worksheet.write(0, 2, "Color")
+    accuracy_worksheet.write(0, 3, "Overall%")
+    accuracy_worksheet.write(0, 4, "Auto%")
+    accuracy_worksheet.write(0, 5, "Tele%")
+    accuracy_worksheet.write(0, 6, "Climb%")
+    tba_match_sorting.initializeTBAData()
+    for matchNum in range(max_matches):
+        # teamsInAMatch = [all_team_match_entries[0],all_team_match_entries[1],all_team_match_entries[2],all_team_match_entries[3],all_team_match_entries[4],all_team_match_entries[5]]
+        teamsInAMatch = []
+        for match_entry in all_team_match_entries:
+            # print(match_entry.qual_match_num)
+            # print(matchNum)
+            if match_entry.qual_match_num == matchNum+1:
+                # print(str(match_entry.qual_match_num)+ " and " + str(matchNum+1))
+                teamsInAMatch.append(match_entry)
+        # print(len(teamsInAMatch))
+        allMatchesValidationData.append(tba_match_sorting.makeBothAllianceMatchClass(teamsInAMatch,all_team_data))
+        redRow = ((matchNum+1) * 2) - 1
+        blueRow = (matchNum+1) * 2
+        accuracy_worksheet.write(redRow, 1, allMatchesValidationData[matchNum].matchNumRed)
+        accuracy_worksheet.write(redRow, 2, "Red")
+        accuracy_worksheet.write(redRow, 3, allMatchesValidationData[matchNum].overallInaccuracyRed)
+        accuracy_worksheet.write(redRow, 4, allMatchesValidationData[matchNum].autoInaccuracyRed)
+        accuracy_worksheet.write(redRow, 5, allMatchesValidationData[matchNum].teleInaccuracyRed)
+        accuracy_worksheet.write(redRow, 6, allMatchesValidationData[matchNum].endGameInaccuracyRed)
+
+        accuracy_worksheet.write(blueRow, 1, allMatchesValidationData[matchNum].matchNumBlue)
+        accuracy_worksheet.write(blueRow, 2, "Blue")
+        accuracy_worksheet.write(blueRow, 3, allMatchesValidationData[matchNum].overallInaccuracyBlue)
+        accuracy_worksheet.write(blueRow, 4, allMatchesValidationData[matchNum].autoInaccuracyBlue)
+        accuracy_worksheet.write(blueRow, 5, allMatchesValidationData[matchNum].teleInaccuracyBlue)
+        accuracy_worksheet.write(blueRow, 6, allMatchesValidationData[matchNum].endGameInaccuracyBlue)
