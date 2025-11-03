@@ -90,7 +90,7 @@ class scoutingAccuracyMatch:
     scouterThreeNameRed: str = ""
     scouterOneInacuracyRed: float = 0.0
     scouterTwoInacuracyRed: float = 0.0
-    scouterTwoInacuracyRed: float = 0.0
+    scouterThreeInacuracyRed: float = 0.0
 
     overallInaccuracyBlue: float = 0.0 
     autoInaccuracyBlue: float = 0.0
