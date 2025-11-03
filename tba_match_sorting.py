@@ -72,25 +72,13 @@ def makeBothAllianceMatchClass(SingleTeamSingleMatchEntrysList: List[shared_clas
             teamAutoLineStr = matchData["score_breakdown"][alliance]["autoLineRobot"+str(i+1)]
             teamAutoLineBool = teamAutoLineStr == "Yes"
             if allianceList[i].leave != teamAutoLineBool:
-                if alliance == "red":
-                    redScoutersQuantitativeInacuracy[i] += 0.4 * (1.0 / 3.0)
-                else:
-                    blueScoutersQuantitativeInacuracy[i] += 0.4 * (1.0 / 3.0)
+                # if alliance == "red":
+                #     redScoutersQuantitativeInacuracy[i] += 0.4 * (1.0 / 3.0)
+                # else:
+                #     blueScoutersQuantitativeInacuracy[i] += 0.4 * (1.0 / 3.0) #this is about 13%
                 leavesOff += 1.0
         autoOffPercent += 0.4 * (leavesOff / 3.0) # max if can be is 0.3 or 30%
         # print(autoOffPercent)
-        for i in range(3):
-            teamNum = allianceList[i].team_num
-            allScoutedAutoPoints = (allianceList[i].autoL1*autoL1PointsValue) + (allianceList[i].autoL2*autoL2PointsValue) 
-            + (allianceList[i].autoL3*autoL3PointsValue) + (allianceList[i].autoL4*autoL4PointsValue)
-
-            aveAllAutoPoints = all_team_data[teamNum].aveAutoL1Points+all_team_data[teamNum].aveAutoL2Points
-            +all_team_data[teamNum].aveAutoL3Points+all_team_data[teamNum].aveAutoL4Points
-            
-            if alliance == "red":
-                redScoutersQuantitativeInacuracy[i] += 0.02 * abs(allScoutedAutoPoints-aveAllAutoPoints)
-            else:
-                blueScoutersQuantitativeInacuracy[i] += 0.02 * abs(allScoutedAutoPoints-aveAllAutoPoints)
         scoutedCoralL2TotalAuto = allianceList[0].autoL2 + allianceList[1].autoL2 + allianceList[2].autoL2
         scoutedCoralL3TotalAuto = allianceList[0].autoL3 + allianceList[1].autoL3 + allianceList[2].autoL3
         scoutedCoralL4TotalAuto = allianceList[0].autoL4 + allianceList[1].autoL4 + allianceList[2].autoL4
@@ -102,12 +90,51 @@ def makeBothAllianceMatchClass(SingleTeamSingleMatchEntrysList: List[shared_clas
         autoOffPercent += abs(scoutedCoralL2TotalAuto - tbaL2Auto) * 0.3
         autoOffPercent += abs(scoutedCoralL3TotalAuto - tbaL3Auto) * 0.3
         autoOffPercent += abs(scoutedCoralL4TotalAuto - tbaL4Auto) * 0.3
+
+        for i in range(3):
+            teamNum = allianceList[i].team_num
+            allScoutedAutoPoints = (allianceList[i].autoL1*autoL1PointsValue) + (allianceList[i].autoL2*autoL2PointsValue) 
+            + (allianceList[i].autoL3*autoL3PointsValue) + (allianceList[i].autoL4*autoL4PointsValue) 
+            + (allianceList[i].autoNet*netPointsValue) + (allianceList[i].autoProcessor*processorPointsValue) 
+
+            aveAllAutoPoints = all_team_data[teamNum].aveAutoL1Points+all_team_data[teamNum].aveAutoL2Points
+            +all_team_data[teamNum].aveAutoL3Points+all_team_data[teamNum].aveAutoL4Points+all_team_data[teamNum].aveAutoNetPoints
+            +all_team_data[teamNum].aveAutoProcessorPoints
+
+            predictedDataScewAuto = 0.0
+            if allScoutedAutoPoints == 0:
+                # predictedDataScewAuto = aveAllAutoPoints * 1.0 * autoOffPercent
+                predictedDataScewAuto = 0
+            elif aveAllAutoPoints == 0:
+                # predictedDataScewAuto = allScoutedAutoPoints * 1.0 * autoOffPercent
+                predictedDataScewAuto = 0
+            elif allScoutedAutoPoints + aveAllAutoPoints != 0:
+                predictedDataScewAuto = (0.15 * allScoutedAutoPoints/aveAllAutoPoints) * autoOffPercent
+                # predictedDataScewAuto = 0
+            if alliance == "red":
+                redScoutersQuantitativeInacuracy[i] += predictedDataScewAuto
+            else:
+                blueScoutersQuantitativeInacuracy[i] += predictedDataScewAuto
         # print(abs(scoutedCoralL4TotalAuto - tbaL4Auto) * 0.3)
         # print(str(tbaL4Auto) + " real "+ str(tbaL4Auto) + " "+ alliance + " "+ str(allianceList[0].qual_match_num) + 
         #       " " + str(matchData["match_number"]))
         # print(autoOffPercent)
 
         # Teleop calculation
+
+        for i in range(3):
+            teamNum = allianceList[i].team_num
+            allScoutedTelePoints = (allianceList[i].teleL1*L1PointsValue) + (allianceList[i].teleL2*L2PointsValue) 
+            + (allianceList[i].teleL3*L3PointsValue) + (allianceList[i].teleL4*L4PointsValue) 
+            + (allianceList[i].teleNet*netPointsValue) + (allianceList[i].teleProcessor*processorPointsValue) 
+
+            aveAllTelePoints = all_team_data[teamNum].aveTeleL1Points+all_team_data[teamNum].aveTeleL2Points
+            +all_team_data[teamNum].aveTeleL3Points+all_team_data[teamNum].aveTeleL4Points+all_team_data[teamNum].aveTeleNetPoints
+            +all_team_data[teamNum].aveTeleProcessorPoints
+            # if alliance == "red":
+            #     redScoutersQuantitativeInacuracy[i] += 0.02 * abs(allScoutedTelePoints-aveAllTelePoints)
+            # else:
+            #     blueScoutersQuantitativeInacuracy[i] += 0.02 * abs(allScoutedTelePoints-aveAllTelePoints)
         scoutedCoralL1Total = allianceList[0].autoL1 + allianceList[0].teleL1 
         + allianceList[1].autoL1 + allianceList[1].teleL1 + allianceList[2].autoL1 +allianceList[2].teleL1
         scoutedCoralL2TotalTele = allianceList[0].teleL2 + allianceList[1].teleL2 + allianceList[2].teleL2
@@ -149,21 +176,21 @@ def makeBothAllianceMatchClass(SingleTeamSingleMatchEntrysList: List[shared_clas
         # print(teleOffPercent)
         climbsOff = 0.0
         for i in range(3):
-            teamAutoLineStr = matchData["score_breakdown"][alliance]["endGameRobot"+str(i+1)]
-            match teamAutoLineStr:
+            teamClimbStr = matchData["score_breakdown"][alliance]["endGameRobot"+str(i+1)]
+            match teamClimbStr:
                 case "None":
-                    teamAutoLineStr = "None of the above"
+                    teamClimbStr = "None of the above"
                 case "Parked":
-                    teamAutoLineStr = "Park in the barge zone"
+                    teamClimbStr = "Park in the barge zone"
                 case "ShallowCage":
-                    teamAutoLineStr = "Climb on the shallow cage"
+                    teamClimbStr = "Climb on the shallow cage"
                 case "DeepCage":
-                    teamAutoLineStr = "Climb on the deep cage"
-            if allianceList[i].climb != teamAutoLineStr:
-                if alliance == "red":
-                    redScoutersQuantitativeInacuracy[i] += 1.0 * (1.0 / 3.0)
-                else:
-                    blueScoutersQuantitativeInacuracy[i] += 1.0 * (1.0 / 3.0)
+                    teamClimbStr = "Climb on the deep cage"
+            if allianceList[i].climb != teamClimbStr:
+                # if alliance == "red":
+                #     redScoutersQuantitativeInacuracy[i] += 1.0 * (1.0 / 3.0)
+                # else:
+                #     blueScoutersQuantitativeInacuracy[i] += 1.0 * (1.0 / 3.0)
                 climbsOff += 1.0
             # print(allianceList[i].climb+" "+teamAutoLineStr)
             # print("sf")
@@ -183,9 +210,9 @@ def makeBothAllianceMatchClass(SingleTeamSingleMatchEntrysList: List[shared_clas
             outputData.scouterOneNameRed = allianceList[0].commenter
             outputData.scouterTwoNameRed = allianceList[1].commenter
             outputData.scouterThreeNameRed = allianceList[2].commenter
-            outputData.scouterOneInacuracyRed = redScoutersQuantitativeInacuracy[0]
-            outputData.scouterTwoInacuracyRed = redScoutersQuantitativeInacuracy[1]
-            outputData.scouterTwoInacuracyRed = redScoutersQuantitativeInacuracy[2]
+            outputData.scouterOneInacuracyRed = redScoutersQuantitativeInacuracy[0] * 100.0
+            outputData.scouterTwoInacuracyRed = redScoutersQuantitativeInacuracy[1] * 100.0
+            outputData.scouterTwoInacuracyRed = redScoutersQuantitativeInacuracy[2] * 100.0
         else:
             outputData.overallInaccuracyBlue = autoOffPercent+teleOffPercent+endGameOffPercent
             outputData.autoInaccuracyBlue = autoOffPercent
@@ -195,9 +222,9 @@ def makeBothAllianceMatchClass(SingleTeamSingleMatchEntrysList: List[shared_clas
             outputData.scouterOneNameBlue = allianceList[0].commenter
             outputData.scouterTwoNameBlue = allianceList[1].commenter
             outputData.scouterThreeNameBlue = allianceList[2].commenter
-            outputData.scouterOneInacuracyBlue = blueScoutersQuantitativeInacuracy[0]
-            outputData.scouterTwoInacuracyBlue = blueScoutersQuantitativeInacuracy[1]
-            outputData.scouterTwoInacuracyBlue = blueScoutersQuantitativeInacuracy[2]
+            outputData.scouterOneInacuracyBlue = blueScoutersQuantitativeInacuracy[0] * 100.0
+            outputData.scouterTwoInacuracyBlue = blueScoutersQuantitativeInacuracy[1] * 100.0
+            outputData.scouterThreeInacuracyBlue = blueScoutersQuantitativeInacuracy[2] * 100.0
     # print(redScoutersQuantitativeInacuracy[0])
     return outputData   
 

@@ -662,6 +662,12 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
     accuracy_worksheet.write(0, 4, "Auto%")
     accuracy_worksheet.write(0, 5, "Tele%")
     accuracy_worksheet.write(0, 6, "Climb%")
+    accuracy_worksheet.write(0, 8, "robot1")
+    accuracy_worksheet.write(0, 9, "robot2%")
+    accuracy_worksheet.write(0, 10, "robot3%")
+    accuracy_worksheet.write(0, 11, "scout1%")
+    accuracy_worksheet.write(0, 12, "scout2%")
+    accuracy_worksheet.write(0, 13, "scout3%")
     tba_match_sorting.initializeTBAData()
     for matchNum in range(max_matches):
         # teamsInAMatch = [all_team_match_entries[0],all_team_match_entries[1],all_team_match_entries[2],all_team_match_entries[3],all_team_match_entries[4],all_team_match_entries[5]]
@@ -683,9 +689,24 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
         accuracy_worksheet.write(redRow, 5, allMatchesValidationData[matchNum].teleInaccuracyRed)
         accuracy_worksheet.write(redRow, 6, allMatchesValidationData[matchNum].endGameInaccuracyRed)
 
+        accuracy_worksheet.write(redRow, 8, allMatchesValidationData[matchNum].scouterOneInacuracyRed)
+        accuracy_worksheet.write(redRow, 9, allMatchesValidationData[matchNum].scouterTwoInacuracyRed)
+        accuracy_worksheet.write(redRow, 10, allMatchesValidationData[matchNum].scouterThreeInacuracyBlue)
+        accuracy_worksheet.write(redRow, 11, allMatchesValidationData[matchNum].scouterOneNameRed)
+        accuracy_worksheet.write(redRow, 12, allMatchesValidationData[matchNum].scouterTwoNameRed)
+        accuracy_worksheet.write(redRow, 13, allMatchesValidationData[matchNum].scouterThreeNameRed)
+
         accuracy_worksheet.write(blueRow, 1, allMatchesValidationData[matchNum].matchNumBlue)
         accuracy_worksheet.write(blueRow, 2, "Blue")
         accuracy_worksheet.write(blueRow, 3, allMatchesValidationData[matchNum].overallInaccuracyBlue)
         accuracy_worksheet.write(blueRow, 4, allMatchesValidationData[matchNum].autoInaccuracyBlue)
         accuracy_worksheet.write(blueRow, 5, allMatchesValidationData[matchNum].teleInaccuracyBlue)
         accuracy_worksheet.write(blueRow, 6, allMatchesValidationData[matchNum].endGameInaccuracyBlue)
+
+        accuracy_worksheet.write(blueRow, 8, allMatchesValidationData[matchNum].scouterOneInacuracyBlue)
+        accuracy_worksheet.write(blueRow, 9, allMatchesValidationData[matchNum].scouterTwoInacuracyBlue)
+        accuracy_worksheet.write(blueRow, 10, allMatchesValidationData[matchNum].scouterThreeInacuracyBlue)
+        accuracy_worksheet.write(blueRow, 11, allMatchesValidationData[matchNum].scouterOneNameBlue)
+        accuracy_worksheet.write(blueRow, 12, allMatchesValidationData[matchNum].scouterTwoNameBlue)
+        accuracy_worksheet.write(blueRow, 13, allMatchesValidationData[matchNum].scouterThreeNameBlue)
+    print("Outputsheet done!!!") # red 6 seamus 0
