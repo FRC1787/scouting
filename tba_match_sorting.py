@@ -123,19 +123,6 @@ def makeBothAllianceMatchClass(SingleTeamSingleMatchEntrysList: List[shared_clas
 
         # Teleop calculation
 
-        for i in range(3):
-            teamNum = allianceList[i].team_num
-            allScoutedTelePoints = (allianceList[i].teleL1*L1PointsValue) + (allianceList[i].teleL2*L2PointsValue) 
-            + (allianceList[i].teleL3*L3PointsValue) + (allianceList[i].teleL4*L4PointsValue) 
-            + (allianceList[i].teleNet*netPointsValue) + (allianceList[i].teleProcessor*processorPointsValue) 
-
-            aveAllTelePoints = all_team_data[teamNum].aveTeleL1Points+all_team_data[teamNum].aveTeleL2Points
-            +all_team_data[teamNum].aveTeleL3Points+all_team_data[teamNum].aveTeleL4Points+all_team_data[teamNum].aveTeleNetPoints
-            +all_team_data[teamNum].aveTeleProcessorPoints
-            # if alliance == "red":
-            #     redScoutersQuantitativeInacuracy[i] += 0.02 * abs(allScoutedTelePoints-aveAllTelePoints)
-            # else:
-            #     blueScoutersQuantitativeInacuracy[i] += 0.02 * abs(allScoutedTelePoints-aveAllTelePoints)
         scoutedCoralL1Total = allianceList[0].autoL1 + allianceList[0].teleL1 
         + allianceList[1].autoL1 + allianceList[1].teleL1 + allianceList[2].autoL1 +allianceList[2].teleL1
         scoutedCoralL2TotalTele = allianceList[0].teleL2 + allianceList[1].teleL2 + allianceList[2].teleL2
@@ -156,7 +143,7 @@ def makeBothAllianceMatchClass(SingleTeamSingleMatchEntrysList: List[shared_clas
 
         tbaNetAlgae =  matchData["score_breakdown"][alliance]["netAlgaeCount"]
         tbaProccesorAlgae =  matchData["score_breakdown"][alliance]["wallAlgaeCount"]
-        
+
         teleOffPercent += abs(scoutedCoralL1Total - tbaL1) * 0.05
         teleOffPercent += abs(scoutedCoralL2TotalTele - tbaL2Tele) * 0.05
         teleOffPercent += abs(scoutedCoralL3TotalTele - tbaL3Tele) * 0.05
@@ -175,6 +162,34 @@ def makeBothAllianceMatchClass(SingleTeamSingleMatchEntrysList: List[shared_clas
         # teleOffPercent += abs(scoutedNetAlgae - tbaNetAlgae) * howMuchWeTrustNetCount
         # print(abs(scoutedNetAlgae - tbaNetAlgae) * howMuchWeTrustNetCount)
         # print(teleOffPercent)
+
+        for i in range(3):
+            teamNum = allianceList[i].team_num
+            allScoutedTelePoints = (allianceList[i].teleL1*L1PointsValue) + (allianceList[i].teleL2*L2PointsValue) 
+            + (allianceList[i].teleL3*L3PointsValue) + (allianceList[i].teleL4*L4PointsValue) 
+            + (allianceList[i].teleNet*netPointsValue) + (allianceList[i].teleProcessor*processorPointsValue) 
+
+            aveAllTelePoints = all_team_data[teamNum].aveTeleL1Points+all_team_data[teamNum].aveTeleL2Points
+            +all_team_data[teamNum].aveTeleL3Points+all_team_data[teamNum].aveTeleL4Points+all_team_data[teamNum].aveTeleNetPoints
+            +all_team_data[teamNum].aveTeleProcessorPoints
+
+            predictedDataScewTele = 0.0
+            if allScoutedTelePoints == 0:
+                predictedDataScewTele = aveAllTelePoints * 1.0 * teleOffPercent
+                # predictedDataScewAuto = 0
+            elif aveAllTelePoints == 0:
+                predictedDataScewTele = allScoutedTelePoints * 1.0 * teleOffPercent
+                # predictedDataScewAuto = 0
+            elif allScoutedTelePoints + aveAllTelePoints != 0:
+                predictedDataScewTele = (0.15 * allScoutedTelePoints/aveAllTelePoints) * teleOffPercent
+                # predictedDataScewAuto = 0
+            if alliance == "red":
+                # if i != 2:
+                redScoutersQuantitativeInacuracy[i] += predictedDataScewTele
+            else:
+                # if i != 2:
+                blueScoutersQuantitativeInacuracy[i] += predictedDataScewTele
+        
         climbsOff = 0.0
         for i in range(3):
             teamClimbStr = matchData["score_breakdown"][alliance]["endGameRobot"+str(i+1)]
@@ -188,10 +203,10 @@ def makeBothAllianceMatchClass(SingleTeamSingleMatchEntrysList: List[shared_clas
                 case "DeepCage":
                     teamClimbStr = "Climb on the deep cage"
             if allianceList[i].climb != teamClimbStr:
-                # if alliance == "red":
-                #     redScoutersQuantitativeInacuracy[i] += 1.0 * (1.0 / 3.0)
-                # else:
-                #     blueScoutersQuantitativeInacuracy[i] += 1.0 * (1.0 / 3.0)
+                if alliance == "red":
+                    redScoutersQuantitativeInacuracy[i] += 1.0 * (1.0 / 3.0)
+                else:
+                    blueScoutersQuantitativeInacuracy[i] += 1.0 * (1.0 / 3.0)
                 climbsOff += 1.0
             # print(allianceList[i].climb+" "+teamAutoLineStr)
             # print("sf")

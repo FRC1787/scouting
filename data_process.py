@@ -691,7 +691,7 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
 
         accuracy_worksheet.write(redRow, 8, allMatchesValidationData[matchNum].scouterOneInacuracyRed)
         accuracy_worksheet.write(redRow, 9, allMatchesValidationData[matchNum].scouterTwoInacuracyRed)
-        accuracy_worksheet.write(redRow, 10, allMatchesValidationData[matchNum].scouterThreeInacuracyBlue)
+        accuracy_worksheet.write(redRow, 10, allMatchesValidationData[matchNum].scouterThreeInacuracyRed)
         accuracy_worksheet.write(redRow, 11, allMatchesValidationData[matchNum].scouterOneNameRed)
         accuracy_worksheet.write(redRow, 12, allMatchesValidationData[matchNum].scouterTwoNameRed)
         accuracy_worksheet.write(redRow, 13, allMatchesValidationData[matchNum].scouterThreeNameRed)
