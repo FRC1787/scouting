@@ -656,19 +656,52 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
                 # single_teams_worksheet.write(0, 6, "Scouter")
                 # single_teams_worksheet.write(0, 7, "Comment")
     # tbaSorting = tba_match_sorting
+    green_format = output_workbook.add_format()
+    green_format.set_pattern(1)
+    green_format.set_bg_color('green')
+
+    yellow_format = output_workbook.add_format()
+    yellow_format.set_pattern(1)
+    yellow_format.set_bg_color('yellow')
+
+    red_format = output_workbook.add_format()
+    red_format.set_pattern(1)
+    red_format.set_bg_color('red')
+
+    purple_format = output_workbook.add_format()
+    purple_format.set_pattern(1)
+    purple_format.set_bg_color('purple')
+
+    white_format = output_workbook.add_format()
+    white_format.set_pattern(1)
+    white_format.set_bg_color('white')
+
     accuracy_worksheet.write(0, 1, "Match")
     accuracy_worksheet.write(0, 2, "Color")
     accuracy_worksheet.write(0, 3, "Overall%")
     accuracy_worksheet.write(0, 4, "Auto%")
     accuracy_worksheet.write(0, 5, "Tele%")
     accuracy_worksheet.write(0, 6, "Climb%")
-    accuracy_worksheet.write(0, 8, "robot1")
+    accuracy_worksheet.write(0, 8, "robot1%")
     accuracy_worksheet.write(0, 9, "robot2%")
     accuracy_worksheet.write(0, 10, "robot3%")
     accuracy_worksheet.write(0, 11, "scout1%")
     accuracy_worksheet.write(0, 12, "scout2%")
     accuracy_worksheet.write(0, 13, "scout3%")
     tba_match_sorting.initializeTBAData()
+    def outputFormatWithTolerance(number, yellowTolerance, redTolerance):
+        format = green_format
+        if number > 40:
+            if number > 70:
+                format = red_format
+            else:
+                format = yellow_format
+        return format
+    def outputFormatMissedClimb(missedClimb):
+        if missedClimb:
+            return purple_format
+        else:
+            return white_format
     for matchNum in range(max_matches):
         # teamsInAMatch = [all_team_match_entries[0],all_team_match_entries[1],all_team_match_entries[2],all_team_match_entries[3],all_team_match_entries[4],all_team_match_entries[5]]
         teamsInAMatch = []
@@ -684,29 +717,39 @@ with xlsxwriter.Workbook(output_file_name) as output_workbook:
         blueRow = (matchNum+1) * 2
         accuracy_worksheet.write(redRow, 1, allMatchesValidationData[matchNum].matchNumRed)
         accuracy_worksheet.write(redRow, 2, "Red")
-        accuracy_worksheet.write(redRow, 3, allMatchesValidationData[matchNum].overallInaccuracyRed)
+
+        redInacuracy = allMatchesValidationData[matchNum].overallInaccuracyRed
+        accuracy_worksheet.write(redRow, 3, redInacuracy, outputFormatWithTolerance(redInacuracy,40,70))
         accuracy_worksheet.write(redRow, 4, allMatchesValidationData[matchNum].autoInaccuracyRed)
         accuracy_worksheet.write(redRow, 5, allMatchesValidationData[matchNum].teleInaccuracyRed)
         accuracy_worksheet.write(redRow, 6, allMatchesValidationData[matchNum].endGameInaccuracyRed)
 
-        accuracy_worksheet.write(redRow, 8, allMatchesValidationData[matchNum].scouterOneInacuracyRed)
-        accuracy_worksheet.write(redRow, 9, allMatchesValidationData[matchNum].scouterTwoInacuracyRed)
-        accuracy_worksheet.write(redRow, 10, allMatchesValidationData[matchNum].scouterThreeInacuracyRed)
-        accuracy_worksheet.write(redRow, 11, allMatchesValidationData[matchNum].scouterOneNameRed)
-        accuracy_worksheet.write(redRow, 12, allMatchesValidationData[matchNum].scouterTwoNameRed)
-        accuracy_worksheet.write(redRow, 13, allMatchesValidationData[matchNum].scouterThreeNameRed)
+        scouter1In = allMatchesValidationData[matchNum].scouterOneInacuracyRed
+        scouter2In = allMatchesValidationData[matchNum].scouterTwoInacuracyRed
+        scouter3In = allMatchesValidationData[matchNum].scouterThreeInacuracyRed
+
+        accuracy_worksheet.write(redRow, 8, scouter1In, outputFormatWithTolerance(scouter1In,40,70))
+        accuracy_worksheet.write(redRow, 9, scouter2In, outputFormatWithTolerance(scouter2In,40,70))
+        accuracy_worksheet.write(redRow, 10, scouter3In, outputFormatWithTolerance(scouter3In,40,70))
+        accuracy_worksheet.write(redRow, 11, allMatchesValidationData[matchNum].scouterOneNameRed,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterOneMissClimbRed))
+        accuracy_worksheet.write(redRow, 12, allMatchesValidationData[matchNum].scouterTwoNameRed,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterTwoMissClimbRed))
+        accuracy_worksheet.write(redRow, 13, allMatchesValidationData[matchNum].scouterThreeNameRed,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterThreeMissClimbRed))
 
         accuracy_worksheet.write(blueRow, 1, allMatchesValidationData[matchNum].matchNumBlue)
         accuracy_worksheet.write(blueRow, 2, "Blue")
-        accuracy_worksheet.write(blueRow, 3, allMatchesValidationData[matchNum].overallInaccuracyBlue)
+        blueInacuracy = allMatchesValidationData[matchNum].overallInaccuracyBlue
+        accuracy_worksheet.write(blueRow, 3, blueInacuracy, outputFormatWithTolerance(blueInacuracy,40,70))
         accuracy_worksheet.write(blueRow, 4, allMatchesValidationData[matchNum].autoInaccuracyBlue)
         accuracy_worksheet.write(blueRow, 5, allMatchesValidationData[matchNum].teleInaccuracyBlue)
         accuracy_worksheet.write(blueRow, 6, allMatchesValidationData[matchNum].endGameInaccuracyBlue)
 
-        accuracy_worksheet.write(blueRow, 8, allMatchesValidationData[matchNum].scouterOneInacuracyBlue)
-        accuracy_worksheet.write(blueRow, 9, allMatchesValidationData[matchNum].scouterTwoInacuracyBlue)
-        accuracy_worksheet.write(blueRow, 10, allMatchesValidationData[matchNum].scouterThreeInacuracyBlue)
-        accuracy_worksheet.write(blueRow, 11, allMatchesValidationData[matchNum].scouterOneNameBlue)
-        accuracy_worksheet.write(blueRow, 12, allMatchesValidationData[matchNum].scouterTwoNameBlue)
-        accuracy_worksheet.write(blueRow, 13, allMatchesValidationData[matchNum].scouterThreeNameBlue)
-    print("Outputsheet done!!!") # red 6 seamus 0
+        scouter1In = allMatchesValidationData[matchNum].scouterOneInacuracyBlue
+        scouter2In = allMatchesValidationData[matchNum].scouterTwoInacuracyBlue
+        scouter3In = allMatchesValidationData[matchNum].scouterThreeInacuracyBlue
+        accuracy_worksheet.write(blueRow, 8, scouter1In, outputFormatWithTolerance(scouter1In,40,70))
+        accuracy_worksheet.write(blueRow, 9, scouter2In, outputFormatWithTolerance(scouter2In,40,70))
+        accuracy_worksheet.write(blueRow, 10, scouter3In, outputFormatWithTolerance(scouter3In,40,70))
+        accuracy_worksheet.write(blueRow, 11, allMatchesValidationData[matchNum].scouterOneNameBlue,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterOneMissClimbBlue))
+        accuracy_worksheet.write(blueRow, 12, allMatchesValidationData[matchNum].scouterTwoNameBlue,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterTwoMissClimbBlue))
+        accuracy_worksheet.write(blueRow, 13, allMatchesValidationData[matchNum].scouterThreeNameBlue,outputFormatMissedClimb(allMatchesValidationData[matchNum].scouterThreeMissClimbBlue))
+    print("Outputsheet done!!!")

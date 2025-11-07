@@ -91,6 +91,9 @@ class scoutingAccuracyMatch:
     scouterOneInacuracyRed: float = 0.0
     scouterTwoInacuracyRed: float = 0.0
     scouterThreeInacuracyRed: float = 0.0
+    scouterOneMissClimbRed: bool = False
+    scouterTwoMissClimbRed: bool = False
+    scouterThreeMissClimbRed: bool = False
 
     overallInaccuracyBlue: float = 0.0 
     autoInaccuracyBlue: float = 0.0
@@ -104,4 +107,7 @@ class scoutingAccuracyMatch:
     scouterOneInacuracyBlue: float = 0.0
     scouterTwoInacuracyBlue: float = 0.0
     scouterThreeInacuracyBlue: float = 0.0
+    scouterOneMissClimbBlue: bool = False
+    scouterTwoMissClimbBlue: bool = False
+    scouterThreeMissClimbBlue: bool = False
     

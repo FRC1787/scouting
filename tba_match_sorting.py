@@ -52,7 +52,9 @@ def makeBothAllianceMatchClass(SingleTeamSingleMatchEntrysList: List[shared_clas
     # Validating the data now
 
     redScoutersQuantitativeInacuracy = [0.0,0.0,0.0]
+    redScoutersMissedClimbs = [False,False,False]
     blueScoutersQuantitativeInacuracy = [0.0,0.0,0.0]
+    blueScoutersMissedClimbs = [False,False,False]
 
     # auto
     for i in range (2):
@@ -205,8 +207,11 @@ def makeBothAllianceMatchClass(SingleTeamSingleMatchEntrysList: List[shared_clas
             if allianceList[i].climb != teamClimbStr:
                 if alliance == "red":
                     redScoutersQuantitativeInacuracy[i] += 1.0 * (1.0 / 3.0)
+                    redScoutersMissedClimbs[i] = True
+                    # print(redScoutersMissedClimbs[i])
                 else:
                     blueScoutersQuantitativeInacuracy[i] += 1.0 * (1.0 / 3.0)
+                    blueScoutersMissedClimbs[i] = True
                 climbsOff += 1.0
             # print(allianceList[i].climb+" "+teamAutoLineStr)
             # print("sf")
@@ -229,6 +234,9 @@ def makeBothAllianceMatchClass(SingleTeamSingleMatchEntrysList: List[shared_clas
             outputData.scouterOneInacuracyRed = redScoutersQuantitativeInacuracy[0] * 100.0
             outputData.scouterTwoInacuracyRed = redScoutersQuantitativeInacuracy[1] * 100.0
             outputData.scouterThreeInacuracyRed= redScoutersQuantitativeInacuracy[2] * 100.0
+            outputData.scouterOneMissClimbRed= redScoutersMissedClimbs[0]
+            outputData.scouterTwoMissClimbRed= redScoutersMissedClimbs[1]
+            outputData.scouterThreeMissClimbRed= redScoutersMissedClimbs[2]
         else:
             outputData.overallInaccuracyBlue = autoOffPercent+teleOffPercent+endGameOffPercent
             outputData.autoInaccuracyBlue = autoOffPercent
@@ -241,6 +249,9 @@ def makeBothAllianceMatchClass(SingleTeamSingleMatchEntrysList: List[shared_clas
             outputData.scouterOneInacuracyBlue = blueScoutersQuantitativeInacuracy[0] * 100.0
             outputData.scouterTwoInacuracyBlue = blueScoutersQuantitativeInacuracy[1] * 100.0
             outputData.scouterThreeInacuracyBlue = blueScoutersQuantitativeInacuracy[2] * 100.0
+            outputData.scouterOneMissClimbBlue= blueScoutersMissedClimbs[0]
+            outputData.scouterTwoMissClimbBlue= blueScoutersMissedClimbs[1]
+            outputData.scouterThreeMissClimbBlue= blueScoutersMissedClimbs[2]
     # print(redScoutersQuantitativeInacuracy[0])
     return outputData   
 
